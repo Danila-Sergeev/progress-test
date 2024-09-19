@@ -39,16 +39,13 @@ function drawSpeed(start, end, cur) {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height); //Очищаем холст
-
   if (!hideInput.checked) {
     curAngle = Math.min(curAngle + stepAngle, endAngle); //Увеличиваем угол на шаг и обновляем
     drawSpeed(startAngle, endAngle, curAngle);
   }
-
   if (curAngle >= endAngle) {
     curAngle = startAngle;
   }
-
   if (animationRunning) {
     //Запускаем след цикл анимации
     requestAnimationFrame(draw);
@@ -74,8 +71,13 @@ valueInput.addEventListener("input", () => {
 // Функции для установки состояния
 
 function setAnimated(isAnimated) {
-  valueInput.value = 0;
-  animationRunning = isAnimated;
+  if (isAnimated) {
+    valueInput.value = 0;
+    animationRunning = isAnimated;
+  } else {
+    animationRunning = isAnimated;
+    curAngle = startAngle;
+  }
   draw();
 }
 
@@ -94,9 +96,12 @@ function setValue(percent) {
       curAngle = startAngle + ((endAngle - startAngle) * percent) / 100;
       drawSpeed(startAngle, endAngle, curAngle);
     }
+    valueInput.value = percent; // Обновить значение ввода
   } else {
     curAngle = startAngle;
-    drawSpeed(startAngle, endAngle, curAngle);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawSpeed(startAngle, endAngle, startAngle);
+    valueInput.value = 0; // Обновить значение ввода
   }
 }
 
@@ -104,3 +109,5 @@ function setValue(percent) {
 setValue(0);
 setAnimated(false);
 setHidden(false);
+
+export { setHidden, setAnimated, setValue };
